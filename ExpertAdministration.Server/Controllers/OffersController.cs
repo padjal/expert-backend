@@ -11,7 +11,7 @@ namespace ExpertAdministration.Server.Controllers
     public class OffersController : ControllerBase
     {
         private string _keyFilePath =
-            @"C:\Users\pavel\source\repos\ExpertAdministration\ExpertAdministration.Server\Shared\firebase-key.json";
+            @"C:\Users\pavel\source\repos\ExpertAdministration\ExpertAdministration.Server\Secret\firebase-key.json";
         private string _projectId = "maistor-29821";
         private readonly ILogger _logger;
 
