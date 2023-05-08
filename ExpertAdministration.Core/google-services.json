@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "264714696946",
+    "firebase_url": "https://maistor-29821.firebaseio.com",
+    "project_id": "maistor-29821",
+    "storage_bucket": "maistor-29821.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264714696946:android:a4b4951f01f9db8857b86b",
+        "android_client_info": {
+          "package_name": "com.webdojobg.ekspert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264714696946-9c45300bn6fdmacot884k8e3v6v07c3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoVa5HQ3n4V-BeQRdf9xCe9f-1YqdPU4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264714696946-9c45300bn6fdmacot884k8e3v6v07c3c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "264714696946-ra1buimo4he3c2fausmsmv42svklcjck.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.webdojobg.maistor"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264714696946:android:e74d3f517c08a02e57b86b",
+        "android_client_info": {
+          "package_name": "com.webdojobg.maistor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264714696946-9c45300bn6fdmacot884k8e3v6v07c3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoVa5HQ3n4V-BeQRdf9xCe9f-1YqdPU4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264714696946-9c45300bn6fdmacot884k8e3v6v07c3c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "264714696946-ra1buimo4he3c2fausmsmv42svklcjck.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.webdojobg.maistor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
