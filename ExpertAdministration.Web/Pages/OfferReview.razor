@@ -1,0 +1,66 @@
+﻿@page "/offerreview/{offerId}"
+@using ExpertAdministration.Core.Models
+@using ExpertAdministration.Web.Interfaces
+@using Google.Type
+@using DateTime = System.DateTime
+@inject IDatabaseService DatabaseService
+@inject NavigationManager Navigation
+
+<h3>@Name</h3>
+
+<p>Id: @offerId</p>
+<p>Description: @Description</p>
+<p>Owner: @Owner</p>
+<p>Status: @Status</p>
+<p>Created at: @CreatedAt</p>
+
+<button onclick="@OnBackButtonClick">Go back</button>
+
+
+@code {
+    [Parameter]
+    public string offerId { get; set; }
+
+    public string Name { get; set; }
+
+    public string Description { get; set; }
+
+    public string Owner { get; set; }
+
+    public string Status { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    private Offer _offer { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        //TODO: Get offer info, load images (asynchronously), 
+        LoadOfferDataAsync();
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task LoadOfferDataAsync()
+    {
+        _offer = await DatabaseService.GetOfferAsync(offerId);
+
+        RefreshOfferValues();
+    }
+
+    private void RefreshOfferValues()
+    {
+        Name = _offer.Name;
+        Description = _offer.Description;
+        Owner = _offer.Owner;
+        Status = _offer.Status;
+        CreatedAt = _offer.CreatedAt;
+
+        StateHasChanged();
+    }
+
+    private void OnBackButtonClick()
+    {
+        Navigation.NavigateTo("/offermonitor");
+    }
+}   
