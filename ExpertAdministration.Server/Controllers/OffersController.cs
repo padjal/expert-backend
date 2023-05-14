@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.RegularExpressions;
 using ExpertAdministration.Core.Models;
 using ExpertAdministration.Server.Exceptions;
