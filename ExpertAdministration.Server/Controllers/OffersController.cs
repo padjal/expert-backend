@@ -32,6 +32,7 @@ namespace ExpertAdministration.Server.Controllers
         /// <param name="ct">The cancellation token used to indicate user cancellation intents.</param>
         /// <param name="maxOffersLimit">The maximum number of offers returned from the database. 1000 by default</param>
         /// <returns>An action result from the operation.</returns>
+        /// <response code="500">Returned if there is a database issue while fetching the offers.</response>
         [HttpGet("{maxOffersLimit:int?}")]
         public async Task<ActionResult<List<Offer>>> Get(CancellationToken ct, int maxOffersLimit = 1000)
         {
