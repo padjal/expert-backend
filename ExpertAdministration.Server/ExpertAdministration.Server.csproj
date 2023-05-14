@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DocumentationFile>bin\Debug\net6.0\ExpertAdministration.Server.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" Version="3.3.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />

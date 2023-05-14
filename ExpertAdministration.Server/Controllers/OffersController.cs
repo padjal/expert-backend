@@ -1,116 +1,76 @@
-﻿using ExpertAdministration.Core.Models;
-using Google.Cloud.Firestore;
+﻿using System.Net;
+using System.Text.RegularExpressions;
+using ExpertAdministration.Core.Models;
+using ExpertAdministration.Server.Exceptions;
+using ExpertAdministration.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ExpertAdministration.Server.Controllers
 {
+    /// <summary>
+    /// The controller responsible for interaction with the offers of the application.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class OffersController : ControllerBase
     {
-        private string _keyFilePath =
-            $@".{Path.DirectorySeparatorChar}Shared{Path.DirectorySeparatorChar}firebase-key.json";
-        private string _projectId = "maistor-29821";
+        private readonly IDatabaseService _databaseService;
+        
         private readonly ILogger _logger;
 
-        public OffersController(ILogger<OffersController> logger)
+        public OffersController(ILogger<OffersController> logger, 
+        IDatabaseService databaseService)
         {
             _logger = logger;
-
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", _keyFilePath);
+            _databaseService = databaseService;
         }
 
-        // GET: api/<OffersController>
         [HttpGet]
-        public async Task<IEnumerable<Offer>> Get()
+        public Task<List<Offer>> Get(CancellationToken ct)
         {
-            FirestoreDb db = FirestoreDb.Create(_projectId);
-
-            CollectionReference collection = db.Collection("offers");
-
-            var querySnapshot = await collection.GetSnapshotAsync();
-
-            var offers = new List<Offer>();
-
-            foreach (var document in querySnapshot)
-            {
-                try
-                {
-                    var name = document.GetValue<string>("name");
-                    var id = document.GetValue<string>("id");
-                    var created = document.GetValue<DateTime>("created");
-                    var description = document.GetValue<string>("description");
-                    var owner = document.GetValue<string>("owner");
-                    var categories = document.GetValue<List<string>>("categories");
-
-                    var offer = new Offer()
-                    {
-                        Name = name,
-                        Id = id,
-                        CreatedAt = created,
-                        Description = description,
-                        Owner = owner,
-                        Categories = categories
-                    };
-
-                    offers.Add(offer);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-                }
-            }
-
-            return offers;
+            return _databaseService.GetAllOffersAsync(ct);
         }
 
-        // GET api/<OffersController>/lksjdf32r44j
+        /// <summary>
+        /// Gets an offer instance based on a specified  asynchronously.
+        /// </summary>
+        /// <param name="id">The specified id of the offer being seeked.</param>
+        /// <param name="ct">The cancellation token used to indicate user cancellation intents.</param>
+        /// <returns></returns>
+        /// <response code="200">Returned if offer is found successfully.</response>
+        /// <response code="400">Returned if offer id does not match schema.</response>
+        /// <response code="404">Returned if offer id is not found.</response>
+        /// <response code="500">Returned if offer does not follow application schema.</response>
         [HttpGet("{id}")]
-        public async Task<Offer> Get(string id)
+        public async Task<ActionResult<Offer>> Get(string id, CancellationToken
+         ct)
         {
-            FirestoreDb db = FirestoreDb.Create(_projectId);
+            var idFormat = new Regex(@"^\w{13}$");
 
-            CollectionReference collection = db.Collection("offers");
-
-            var filter = collection.WhereEqualTo("id", id);
-
-            var querySnapshot = await filter.GetSnapshotAsync();
-
-            var offers = new List<Offer>();
-
-            foreach (var document in querySnapshot)
+            if (!idFormat.IsMatch(id))
             {
-                var name = document.GetValue<string>("name");
-                var offerId = document.GetValue<string>("id");
-                var created = document.GetValue<DateTime>("created");
-                var description = document.GetValue<string>("description");
-                var owner = document.GetValue<string>("owner");
-                var categories = document.GetValue<List<string>>("categories");
-
-
-                var offer = new Offer()
-                {
-                    Name = name,
-                    Id = offerId,
-                    CreatedAt = created,
-                    Description = description,
-                    Owner = owner,
-                    Categories = categories
-                };
-
-                offers.Add(offer);
+                return BadRequest("Id does not match schema. Please verify that the given id is in the format \"\\w{13}\"");
             }
 
-            if (offers.Count == 1)
+            Offer? offer;
+            
+            try
             {
-                return offers[0];
+                offer = await _databaseService.GetOfferAsync(id, ct);
             }
-            else
+            catch (IdNotFoundException notFoundException)
             {
-                return null;
+                _logger.LogError(notFoundException.Message);
+                
+                return NotFound(notFoundException.Message);
             }
+
+            if (offer == null)
+            {
+                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
+            
+            return Ok(offer);
         }
 
         // POST api/<OffersController>

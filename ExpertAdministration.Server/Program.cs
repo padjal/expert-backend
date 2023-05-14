@@ -1,3 +1,7 @@
+using System.Reflection;
+using ExpertAdministration.Server.Interfaces;
+using ExpertAdministration.Server.Services;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+    {
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+            $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -17,6 +25,8 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("https://localhost:7165").AllowAnyHeader().AllowAnyMethod();
         });
 });
+
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
 
 builder.Logging.AddConsole();
 
