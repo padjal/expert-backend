@@ -19,16 +19,23 @@ namespace ExpertAdministration.Server.Controllers
         private readonly ILogger _logger;
 
         public OffersController(ILogger<OffersController> logger, 
-        IDatabaseService databaseService)
+            IDatabaseService databaseService)
         {
             _logger = logger;
             _databaseService = databaseService;
         }
 
-        [HttpGet]
-        public Task<List<Offer>> Get(CancellationToken ct)
+        /// <summary>
+        /// Gets all the offers from the database according to the specified limit.
+        /// </summary>
+        /// <remarks>Offers are ordered by createdAt attribute by default.</remarks>
+        /// <param name="ct">The cancellation token used to indicate user cancellation intents.</param>
+        /// <param name="maxOffersLimit">The maximum number of offers returned from the database. 1000 by default</param>
+        /// <returns>An action result from the operation.</returns>
+        [HttpGet("{maxOffersLimit:int?}")]
+        public async Task<ActionResult<List<Offer>>> Get(CancellationToken ct, int maxOffersLimit = 1000)
         {
-            return _databaseService.GetAllOffersAsync(ct);
+            return await _databaseService.GetAllOffersAsync(ct, maxOffersLimit);
         }
 
         /// <summary>
@@ -36,12 +43,12 @@ namespace ExpertAdministration.Server.Controllers
         /// </summary>
         /// <param name="id">The specified id of the offer being seeked.</param>
         /// <param name="ct">The cancellation token used to indicate user cancellation intents.</param>
-        /// <returns></returns>
+        /// <returns>An action result from the operation.</returns>
         /// <response code="200">Returned if offer is found successfully.</response>
         /// <response code="400">Returned if offer id does not match schema.</response>
         /// <response code="404">Returned if offer id is not found.</response>
         /// <response code="500">Returned if offer does not follow application schema.</response>
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<ActionResult<Offer>> Get(string id, CancellationToken
          ct)
         {
@@ -73,19 +80,7 @@ namespace ExpertAdministration.Server.Controllers
             return Ok(offer);
         }
 
-        // POST api/<OffersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
-        // PUT api/<OffersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<OffersController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
