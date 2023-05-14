@@ -8,7 +8,14 @@ namespace ExpertAdministration.Server.Interfaces;
 /// </summary>
 public interface IDatabaseService
 {
-    public Task<List<Offer>> GetAllOffersAsync(CancellationToken ct);
+    /// <summary>
+    /// Returns all the offers from the database according to the specified limit. Offers are ordered by createdAt attribute
+    /// by default.
+    /// </summary>
+    /// <param name="maxOffersLimit">The maximum number of offers returned from the database.</param>
+    /// <param name="ct">The cancellation token, which keeps track of user cancellation intent.</param>
+    /// <returns>A collection of offers or NULL if an error occurs.</returns>
+    public Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit);
 
     /// <summary>
     /// Returns an offer instance based on a specified id asynchronously.
