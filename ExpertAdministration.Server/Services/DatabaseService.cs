@@ -29,9 +29,22 @@ public class DatabaseService : IDatabaseService
     
     public async Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit)
     {
-        var collection = FirestoreDb.Collection("offers").Limit(maxOffersLimit);
+        QuerySnapshot querySnapshot;
+        
+        try
+        {
+            var collection = FirestoreDb.Collection("offers")
+                .OrderBy("created")
+                .Limit(maxOffersLimit);
 
-        var querySnapshot = await collection.GetSnapshotAsync(ct);
+            querySnapshot = await collection.GetSnapshotAsync(ct);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return null;
+        }
 
         var offers = new List<Offer>();
 

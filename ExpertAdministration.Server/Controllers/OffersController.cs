@@ -35,7 +35,14 @@ namespace ExpertAdministration.Server.Controllers
         [HttpGet("{maxOffersLimit:int?}")]
         public async Task<ActionResult<List<Offer>>> Get(CancellationToken ct, int maxOffersLimit = 1000)
         {
-            return await _databaseService.GetAllOffersAsync(ct, maxOffersLimit);
+            var offers = await _databaseService.GetAllOffersAsync(ct, maxOffersLimit);
+
+            if (offers == null)
+            {
+                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(offers);
         }
 
         /// <summary>
@@ -84,6 +91,7 @@ namespace ExpertAdministration.Server.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            throw new NotImplementedException();
         }
     }
 }
