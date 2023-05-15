@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExpertAdministration.Core.Models;
+﻿using ExpertAdministration.Core.Models;
 
 namespace ExpertAdministration.Web.Interfaces
 {
@@ -27,7 +22,7 @@ namespace ExpertAdministration.Web.Interfaces
         /// <param name="offerId">The id of the offer being updated.</param>
         /// <param name="offerStatus">The new status of the offer.</param>
         /// <returns>True if update completes successfully.</returns>
-        bool UpdateOfferStatus(string offerId, string offerStatus);
+        Task<bool> UpdateOfferStatusAsync(string offerId, string offerStatus);
 
         /// <summary>
         /// Gets information for a specified offer given an offer Id asynchronously.

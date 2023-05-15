@@ -59,6 +59,8 @@ public class DatabaseService : IDatabaseService
                 var owner = document.GetValue<string>("owner");
                 var categories = document.GetValue<List<string>>("categories");
                 var status = document.GetValue<string>("status");
+                var images = document.GetValue<List<string>>("images");
+
 
                 var offer = new Offer()
                 {
@@ -68,7 +70,8 @@ public class DatabaseService : IDatabaseService
                     Description = description,
                     Owner = owner,
                     Categories = categories,
-                    Status = status
+                    Status = status,
+                    ImageUrls = images
                 };
 
                 offers.Add(offer);
@@ -107,6 +110,7 @@ public class DatabaseService : IDatabaseService
             var owner = docSnapshot.GetValue<string>("owner");
             var categories = docSnapshot.GetValue<List<string>>("categories");
             var status = docSnapshot.GetValue<string>("status");
+            var images = docSnapshot.GetValue<List<string>>("images");
 
             var offer = new Offer()
             {
@@ -116,7 +120,8 @@ public class DatabaseService : IDatabaseService
                 Description = description,
                 Owner = owner,
                 Categories = categories,
-                Status = status
+                Status = status,
+                ImageUrls = images
             };
 
             return offer;
@@ -127,5 +132,37 @@ public class DatabaseService : IDatabaseService
 
             return null;
         }
+    }
+
+    public async Task<bool> UpdateOfferFieldAsync(string offerId, string field, object value, CancellationToken ct)
+    {
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"offers/{offerId}");
+        }
+        catch
+        {
+            throw new IdNotFoundException(offerId, "Could not find specified offer in database.");
+        }
+
+        try
+        {
+            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            {
+                { new FieldPath(field), value }
+            };
+
+            await document.UpdateAsync(updates);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return false;
+        }
+
+        return true;
     }
 }

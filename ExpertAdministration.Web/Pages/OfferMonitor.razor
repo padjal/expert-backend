@@ -1,12 +1,12 @@
 ﻿@page "/offermonitor"
+@page "/offermonitor/{ShouldRefresh:bool}"
 @using ExpertAdministration.Core.Models
-@using ExpertAdministration.Web.Interfaces
 @using ExpertAdministration.Web.ViewModels
 @using Radzen
 @using Radzen.Blazor
-@inject IDatabaseService DatabaseService
 @inject NavigationManager Navigation
 @inject OffersMonitorViewModel ViewModel
+@inject NavigationManager NavigationManager
 
 <h1>OfferMonitor</h1>
 
@@ -15,7 +15,6 @@
     <p>Loading offers...</p>
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
 }
-
 
 <RadzenDataGrid Data="@ViewModel.Offers" TItem="Offer"
                 AllowAlternatingRows="true"
@@ -40,6 +39,9 @@
 
 @code {
 
+    [Parameter]
+    public bool ShouldRefresh { get; set; }
+
     public void EditOffer(Offer offer)
     {
     //Open new window with all offer information
@@ -51,6 +53,16 @@
         ViewModel.PropertyChanged += (sender, args) => StateHasChanged();
 
         return base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (ShouldRefresh)
+        {
+            ViewModel.GetOffersAsync();
+        }
+
+        base.OnParametersSet();
     }
 
 }

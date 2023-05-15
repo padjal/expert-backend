@@ -25,4 +25,14 @@ public interface IDatabaseService
     /// <returns>An offer instance if found in the database or NULL if an error occurs.</returns>
     /// <exception cref="IdNotFoundException">Occurs when the specified id is not found.</exception>
     public Task<Offer?> GetOfferAsync(string offerId, CancellationToken ct);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="offerId"></param>
+    /// <param name="field"></param>
+    /// <param name="value"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public Task<bool> UpdateOfferFieldAsync(string offerId, string field, object value, CancellationToken ct);
 }

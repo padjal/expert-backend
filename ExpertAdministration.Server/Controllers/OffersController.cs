@@ -88,6 +88,23 @@ namespace ExpertAdministration.Server.Controllers
             return Ok(offer);
         }
 
+        /// <summary>
+        /// Updates a value of an offer with specified offer id with a passed value.
+        /// </summary>
+        /// <remarks>Can only be used to update simple field types. No lists are supported.</remarks>
+        /// <param name="id">The specified id of the offer being updated.</param>
+        /// <param name="field">The name of the field being updated.</param>
+        /// <param name="value">The value of the field being updated.</param>
+        [HttpPatch("{id}/{field}/{value}")]
+        public async Task<ActionResult> Patch(string id, string field, string value, CancellationToken ct)
+        {
+            if (await _databaseService.UpdateOfferFieldAsync(id, field, value, ct))
+            {
+                return Ok();
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+        }
 
         [HttpDelete("{id}")]
         public void Delete(int id)

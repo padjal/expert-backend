@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using ExpertAdministration.Core.Models;
 using ExpertAdministration.Web.Common;
 using ExpertAdministration.Web.Interfaces;
@@ -7,10 +8,12 @@ namespace ExpertAdministration.Web.Services
 {
     public class DatabaseService : IDatabaseService
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
-        public DatabaseService(IHttpClientFactory clientFactory)
+        public DatabaseService(IHttpClientFactory clientFactory, ILogger<DatabaseService> logger)
         {
+            _logger = logger;
             _httpClient = clientFactory.CreateClient(Constants.CustomWebApi);
         }
 
@@ -34,9 +37,18 @@ namespace ExpertAdministration.Web.Services
             throw new NotImplementedException();
         }
 
-        public bool UpdateOfferStatus(string offerId, string offerStatus)
+        public async Task<bool> UpdateOfferStatusAsync(string offerId, string offerStatus)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PatchAsync($"api/offers/{offerId}/status/{offerStatus}", null);
+
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                _logger.LogInformation($"Successfully changed value for offer {offerId}: status -> {offerStatus}");
+                return true;
+            }
+
+            _logger.LogError($"Failed to change offer status for offer {offerId}");
+            return false;
         }
 
         public async Task<Offer> GetOfferAsync(string offerId)
