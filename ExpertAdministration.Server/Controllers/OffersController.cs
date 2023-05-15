@@ -15,10 +15,10 @@ namespace ExpertAdministration.Server.Controllers
     public class OffersController : ControllerBase
     {
         private readonly IDatabaseService _databaseService;
-        
+
         private readonly ILogger _logger;
 
-        public OffersController(ILogger<OffersController> logger, 
+        public OffersController(ILogger<OffersController> logger,
             IDatabaseService databaseService)
         {
             _logger = logger;
@@ -58,17 +58,17 @@ namespace ExpertAdministration.Server.Controllers
         /// <response code="500">Returned if offer does not follow application schema.</response>
         [HttpGet("id/{id}")]
         public async Task<ActionResult<Offer>> Get(string id, CancellationToken
-         ct)
+            ct)
         {
-            var idFormat = new Regex(@"^\w{13}$");
+            var idFormat = new Regex(@"^\w{20}$");
 
             if (!idFormat.IsMatch(id))
             {
-                return BadRequest("Id does not match schema. Please verify that the given id is in the format \"\\w{13}\"");
+                return BadRequest("Id does not match schema. Please verify that the given id is in the format ^\\w{20}$");
             }
 
             Offer? offer;
-            
+
             try
             {
                 offer = await _databaseService.GetOfferAsync(id, ct);
@@ -76,7 +76,7 @@ namespace ExpertAdministration.Server.Controllers
             catch (IdNotFoundException notFoundException)
             {
                 _logger.LogError(notFoundException.Message);
-                
+
                 return NotFound(notFoundException.Message);
             }
 
@@ -84,7 +84,7 @@ namespace ExpertAdministration.Server.Controllers
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
-            
+
             return Ok(offer);
         }
 
