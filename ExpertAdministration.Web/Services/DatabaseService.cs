@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using ExpertAdministration.Web.Interfaces;
+﻿using System.Net.Http.Json;
 using ExpertAdministration.Core.Models;
-using Google.Cloud.Firestore;
-using Google.Cloud.Firestore.V1;
+using ExpertAdministration.Web.Common;
+using ExpertAdministration.Web.Interfaces;
 
 namespace ExpertAdministration.Web.Services
 {
@@ -15,14 +9,14 @@ namespace ExpertAdministration.Web.Services
     {
         private HttpClient _httpClient;
 
-        public DatabaseService()
+        public DatabaseService(IHttpClientFactory clientFactory)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7269/") };
+            _httpClient = clientFactory.CreateClient(Constants.CustomWebApi);
         }
-        
 
         public async Task<List<Offer>> GetAllOffersAsync()
         {
+            //TODO: Check for any errors while fetching all offers.
             List<Offer> offers = new List<Offer>();
 
             var response = await _httpClient.GetFromJsonAsync<List<Offer>>("api/Offers");
@@ -47,16 +41,8 @@ namespace ExpertAdministration.Web.Services
 
         public async Task<Offer> GetOfferAsync(string offerId)
         {
-            try
-            {
-                var test = await _httpClient.GetFromJsonAsync<Offer>($"api/Offers/{offerId}");
-
-            }
-            catch (Exception e)
-            {
-
-            }
-            return await _httpClient.GetFromJsonAsync<Offer>($"api/Offers/{offerId}");
+            //TODO: Check returned result
+            return await _httpClient.GetFromJsonAsync<Offer>($"api/Offers/id/{offerId}");
         }
     }
 }
