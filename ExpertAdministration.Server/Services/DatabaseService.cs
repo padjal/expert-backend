@@ -2,7 +2,6 @@ using ExpertAdministration.Core.Models;
 using ExpertAdministration.Server.Exceptions;
 using ExpertAdministration.Server.Interfaces;
 using Google.Cloud.Firestore;
-using Google.Cloud.Firestore.V1;
 
 namespace ExpertAdministration.Server.Services;
 
@@ -10,15 +9,16 @@ public class DatabaseService : IDatabaseService
 {
     private static readonly string KeyFilePath =
         $@".{Path.DirectorySeparatorChar}Shared{Path.DirectorySeparatorChar}firebase-key.json";
+
     private static readonly string ProjectId = "maistor-29821";
     private static readonly FirestoreDb FirestoreDb;
-    
+
     private readonly ILogger _logger;
 
     static DatabaseService()
     {
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", KeyFilePath);
-        
+
         FirestoreDb = FirestoreDb.Create(ProjectId);
     }
 
@@ -26,12 +26,25 @@ public class DatabaseService : IDatabaseService
     {
         _logger = logger;
     }
-    
-    public async Task<List<Offer>> GetAllOffersAsync(CancellationToken ct)
-    {
-        CollectionReference collection = FirestoreDb.Collection("offers");
 
-        var querySnapshot = await collection.GetSnapshotAsync(ct);
+    public async Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit)
+    {
+        QuerySnapshot querySnapshot;
+
+        try
+        {
+            var collection = FirestoreDb.Collection("offers")
+                .OrderBy("created")
+                .Limit(maxOffersLimit);
+
+            querySnapshot = await collection.GetSnapshotAsync(ct);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return null;
+        }
 
         var offers = new List<Offer>();
 
@@ -45,6 +58,9 @@ public class DatabaseService : IDatabaseService
                 var description = document.GetValue<string>("description");
                 var owner = document.GetValue<string>("owner");
                 var categories = document.GetValue<List<string>>("categories");
+                var status = document.GetValue<string>("status");
+                var images = document.GetValue<List<string>>("images");
+
 
                 var offer = new Offer()
                 {
@@ -53,7 +69,9 @@ public class DatabaseService : IDatabaseService
                     CreatedAt = created,
                     Description = description,
                     Owner = owner,
-                    Categories = categories
+                    Categories = categories,
+                    Status = status,
+                    ImageUrls = images
                 };
 
                 offers.Add(offer);
@@ -71,18 +89,18 @@ public class DatabaseService : IDatabaseService
     public async Task<Offer?> GetOfferAsync(string offerId, CancellationToken ct)
     {
         DocumentReference document;
-        
+
         try
         {
-            document = FirestoreDb.Document(offerId);
+            document = FirestoreDb.Document($"offers/{offerId}");
         }
         catch
         {
             throw new IdNotFoundException(offerId, "Could not find specified offer in database.");
         }
-        
+
         var docSnapshot = await document.GetSnapshotAsync(ct);
-        
+
         try
         {
             var name = docSnapshot.GetValue<string>("name");
@@ -91,6 +109,8 @@ public class DatabaseService : IDatabaseService
             var description = docSnapshot.GetValue<string>("description");
             var owner = docSnapshot.GetValue<string>("owner");
             var categories = docSnapshot.GetValue<List<string>>("categories");
+            var status = docSnapshot.GetValue<string>("status");
+            var images = docSnapshot.GetValue<List<string>>("images");
 
             var offer = new Offer()
             {
@@ -99,7 +119,9 @@ public class DatabaseService : IDatabaseService
                 CreatedAt = created,
                 Description = description,
                 Owner = owner,
-                Categories = categories
+                Categories = categories,
+                Status = status,
+                ImageUrls = images
             };
 
             return offer;
@@ -107,8 +129,67 @@ public class DatabaseService : IDatabaseService
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            
+
             return null;
         }
+    }
+
+    public async Task<bool> UpdateOfferFieldAsync(string offerId, string field, object value, CancellationToken ct)
+    {
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"offers/{offerId}");
+        }
+        catch
+        {
+            throw new IdNotFoundException(offerId, "Could not find specified offer in database.");
+        }
+
+        try
+        {
+            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            {
+                { new FieldPath(field), value }
+            };
+
+            await document.UpdateAsync(updates);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeleteOfferAsync(string offerId, CancellationToken ct)
+    {
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"offers/{offerId}");
+        }
+        catch
+        {
+            throw new IdNotFoundException(offerId, "Could not find specified offer in database.");
+        }
+
+        try
+        {
+            await document.DeleteAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return false;
+        }
+
+        return true;
     }
 }
