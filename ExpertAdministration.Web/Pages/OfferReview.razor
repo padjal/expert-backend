@@ -1,66 +1,96 @@
 ﻿@page "/offerreview/{offerId}"
-@using ExpertAdministration.Core.Models
-@using ExpertAdministration.Web.Interfaces
-@using Google.Type
-@using DateTime = System.DateTime
-@inject IDatabaseService DatabaseService
+@using ExpertAdministration.Web.ViewModels
+@using Radzen
+@using Radzen.Blazor
 @inject NavigationManager Navigation
+@inject OfferReviewViewModel ViewModel
+@inject DialogService DialogService
 
-<h3>@Name</h3>
+@if (ViewModel.IsProgressIndicatorActive)
+{
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
+}
+else
+{
+    <RadzenRow>
+        <RadzenColumn>
+            <h3>@ViewModel.Offer.Name</h3>
+            <p>Id: @ViewModel.Offer.Id</p>
+            <p>Description: @ViewModel.Offer.Description</p>
+            <p>Owner: @ViewModel.Offer.Owner</p>
 
-<p>Id: @offerId</p>
-<p>Description: @Description</p>
-<p>Owner: @Owner</p>
-<p>Status: @Status</p>
-<p>Created at: @CreatedAt</p>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                <p style="padding-top: 10px">Status:</p>
+                <RadzenDropDown @bind-Value=@ViewModel.OfferStatus Data=@StatusOptions Style="width: 100%; max-width: 300px;"/>
+            </RadzenStack>
 
-<button onclick="@OnBackButtonClick">Go back</button>
+            <p>Created at: @ViewModel.Offer.CreatedAt</p>
 
+            <RadzenButton Click=@OnOfferChangeStatusButtonClick Text="Change status" ButtonStyle="ButtonStyle.Info"/>
+
+            <RadzenButton Click=@OnOfferDeleteButtonClick Text="Delete offer" ButtonStyle="ButtonStyle.Danger"/>
+
+            <RadzenButton Click=@OnBackButtonClick Text="Go back" ButtonStyle="ButtonStyle.Primary"/>
+        </RadzenColumn>
+        <RadzenColumn>
+            @foreach (var imageUrl in ViewModel.Offer.ImageUrls)
+            {
+                <RadzenImage Path="@imageUrl" Style="height: 15rem;"/>
+            }
+        </RadzenColumn>
+    </RadzenRow>
+}
 
 @code {
+
     [Parameter]
     public string offerId { get; set; }
 
-    public string Name { get; set; }
-
-    public string Description { get; set; }
-
-    public string Owner { get; set; }
-
-    public string Status { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    private Offer _offer { get; set; }
+    public IEnumerable<string> StatusOptions = new List<string> { "New", "Review", "Active", "Archived" };
 
     protected override Task OnInitializedAsync()
     {
-        //TODO: Get offer info, load images (asynchronously), 
-        LoadOfferDataAsync();
+        ViewModel.PropertyChanged += (sender, args) => StateHasChanged();
+        ViewModel.OnOfferStatusUpdated += ShowUpdateResult;
+
+        ViewModel.LoadOfferDataAsync(offerId);
 
         return base.OnInitializedAsync();
     }
 
-    private async Task LoadOfferDataAsync()
-    {
-        _offer = await DatabaseService.GetOfferAsync(offerId);
-
-        RefreshOfferValues();
-    }
-
-    private void RefreshOfferValues()
-    {
-        Name = _offer.Name;
-        Description = _offer.Description;
-        Owner = _offer.Owner;
-        Status = _offer.Status;
-        CreatedAt = _offer.CreatedAt;
-
-        StateHasChanged();
-    }
-
     private void OnBackButtonClick()
     {
-        Navigation.NavigateTo("/offermonitor");
+        if (ViewModel.OfferStatusHasChanged)
+        {
+            Navigation.NavigateTo("/offermonitor/true");
+        }
+        else
+        {
+            Navigation.NavigateTo("/offermonitor");
+        }
     }
+
+    private async Task OnOfferDeleteButtonClick()
+    {
+        await ViewModel.DeleteOffer();
+    }
+
+    private async Task OnOfferChangeStatusButtonClick()
+    {
+        ViewModel.ChangeStatus();
+    }
+
+    private void ShowUpdateResult(object sender, string title, string message)
+    {
+        ShowMessageDialog(message);
+    }
+
+    async Task ShowMessageDialog(string title, string message = "test")
+    {
+        await DialogService.OpenAsync(title, ds =>
+            @<div>
+                @message
+            </div>, new DialogOptions { CloseDialogOnOverlayClick = true });
+    }
+
 }   

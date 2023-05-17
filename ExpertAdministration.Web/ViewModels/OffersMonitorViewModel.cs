@@ -1,7 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using ExpertAdministration.Core.Models;
+﻿using ExpertAdministration.Core.Models;
 using ExpertAdministration.Web.Interfaces;
-using ExpertAdministration.Web.Services;
 
 namespace ExpertAdministration.Web.ViewModels
 {
@@ -14,6 +12,8 @@ namespace ExpertAdministration.Web.ViewModels
         public OffersMonitorViewModel(IDatabaseService databaseService)
         {
             _databaseService = databaseService;
+
+            GetOffersAsync();
         }
 
         public bool AreOffersLoading

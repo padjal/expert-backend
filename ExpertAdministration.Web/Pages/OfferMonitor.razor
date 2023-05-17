@@ -1,35 +1,32 @@
 ﻿@page "/offermonitor"
+@page "/offermonitor/{ShouldRefresh:bool}"
 @using ExpertAdministration.Core.Models
-@using ExpertAdministration.Web.Services
-@using Radzen.Blazor
-@using ExpertAdministration.Web.Interfaces
 @using ExpertAdministration.Web.ViewModels
 @using Radzen
-@inject IDatabaseService DatabaseService
+@using Radzen.Blazor
 @inject NavigationManager Navigation
 @inject OffersMonitorViewModel ViewModel
+@inject NavigationManager NavigationManager
 
 <h1>OfferMonitor</h1>
 
-@if(ViewModel.AreOffersLoading)
+@if (ViewModel.AreOffersLoading)
 {
     <p>Loading offers...</p>
-}
-else{
-    <button @onclick="OnLoadOffersClick">Load offers</button>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
 }
 
-
-<RadzenDataGrid Data="@ViewModel.Offers" TItem="Offer" 
-                AllowAlternatingRows="true" 
-                AllowFiltering="true" 
-                AllowRowSelectOnRowClick="true" 
+<RadzenDataGrid Data="@ViewModel.Offers" TItem="Offer"
+                AllowAlternatingRows="true"
+                AllowFiltering="true"
+                AllowRowSelectOnRowClick="true"
                 AllowSorting="true">
     <Columns>
-        <RadzenDataGridColumn TItem="Offer" Property="Id" Title="Id"  />
-        <RadzenDataGridColumn TItem="Offer" Property="Name" Title="Name" />
-        <RadzenDataGridColumn TItem="Offer" Property="Owner" Title="Owner" />
-        <RadzenDataGridColumn TItem="Offer" Property="Status" Title="Status" />
+        <RadzenDataGridColumn TItem="Offer" Property="CreatedAt" Title="CreatedAt"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Id" Title="Id"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Name" Title="Name"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Owner" Title="Owner"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Status" Title="Status"/>
         <RadzenDataGridColumn TItem="Offer" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
             <Template Context="offer">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditOffer(offer))" @onclick:stopPropagation="true">
@@ -42,14 +39,12 @@ else{
 
 @code {
 
-    public async void OnLoadOffersClick()
-    {
-        await ViewModel.GetOffersAsync();
-    }
+    [Parameter]
+    public bool ShouldRefresh { get; set; }
 
     public void EditOffer(Offer offer)
     {
-        //Open new window with all offer information
+    //Open new window with all offer information
         Navigation.NavigateTo($"/offerreview/{offer.Id}");
     }
 
@@ -58,6 +53,16 @@ else{
         ViewModel.PropertyChanged += (sender, args) => StateHasChanged();
 
         return base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (ShouldRefresh)
+        {
+            ViewModel.GetOffersAsync();
+        }
+
+        base.OnParametersSet();
     }
 
 }
