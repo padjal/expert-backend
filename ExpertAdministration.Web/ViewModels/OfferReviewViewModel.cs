@@ -12,8 +12,9 @@ public class OfferReviewViewModel : ViewModelBase
     private string _offerStatus;
     private bool _offerStatusHasChanged;
 
-    public event EventHandler<string> OnOfferStatusUpdated;
+    public delegate void OfferStatusHandler(object sender, string title, string message);
 
+    public event OfferStatusHandler OnOfferStatusUpdated;
 
     public OfferReviewViewModel(IDatabaseService databaseService)
     {
@@ -65,13 +66,33 @@ public class OfferReviewViewModel : ViewModelBase
 
         if (isUpdateSuccessful)
         {
-            OnOfferStatusUpdated(this, $"Successfully updated offer {Offer.Id} status to {OfferStatus}");
+            OnOfferStatusUpdated(this, "Update result", $"Successfully updated offer {Offer.Id} status to {OfferStatus}");
 
             OfferStatusHasChanged = true;
         }
         else
         {
-            OnOfferStatusUpdated(this, $"Could not updat offer {Offer.Id} status");
+            OnOfferStatusUpdated(this, "Update result", $"Could not updat offer {Offer.Id} status");
+        }
+    }
+
+    public async Task DeleteOffer()
+    {
+        IsProgressIndicatorActive = true;
+
+        var isDeleteSuccessful = await _databaseService.DeleteOfferAsync(Offer.Id);
+
+        IsProgressIndicatorActive = false;
+
+        if (isDeleteSuccessful)
+        {
+            OnOfferStatusUpdated(this, "Delete result", $"Successfully deleted offer {Offer.Id}");
+
+            OfferStatusHasChanged = true;
+        }
+        else
+        {
+            OnOfferStatusUpdated(this, "Delete result", $"Could not delete offer {Offer.Id}");
         }
     }
 }

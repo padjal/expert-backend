@@ -107,9 +107,14 @@ namespace ExpertAdministration.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(string id, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            if (await _databaseService.DeleteOfferAsync(id, ct))
+            {
+                return Ok();
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
         }
     }
 }

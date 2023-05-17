@@ -30,5 +30,12 @@ namespace ExpertAdministration.Web.Interfaces
         /// <param name="offerId">The offer Id used to filter the offers.</param>
         /// <returns>An offer object</returns>
         Task<Offer> GetOfferAsync(string offerId);
+
+        /// <summary>
+        /// Delete an offer by id.
+        /// </summary>
+        /// <param name="offerId">The specified id.</param>
+        /// <returns>True if operation completes successfully.</returns>
+        Task<bool> DeleteOfferAsync(string offerId);
     }
 }

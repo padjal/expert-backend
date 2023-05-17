@@ -70,8 +70,9 @@ else
         }
     }
 
-    private void OnOfferDeleteButtonClick()
+    private async Task OnOfferDeleteButtonClick()
     {
+        await ViewModel.DeleteOffer();
     }
 
     private async Task OnOfferChangeStatusButtonClick()
@@ -79,17 +80,17 @@ else
         ViewModel.ChangeStatus();
     }
 
-    private void ShowUpdateResult(object sender, string message)
+    private void ShowUpdateResult(object sender, string title, string message)
     {
         ShowMessageDialog(message);
     }
 
-    async Task ShowMessageDialog(string message = "test")
+    async Task ShowMessageDialog(string title, string message = "test")
     {
-        await DialogService.OpenAsync("Update status", ds =>
+        await DialogService.OpenAsync(title, ds =>
             @<div>
                 @message
-            </div>, new DialogOptions() { CloseDialogOnOverlayClick = true });
+            </div>, new DialogOptions { CloseDialogOnOverlayClick = true });
     }
 
 }   

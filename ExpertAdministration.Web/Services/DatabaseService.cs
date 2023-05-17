@@ -48,6 +48,7 @@ namespace ExpertAdministration.Web.Services
             }
 
             _logger.LogError($"Failed to change offer status for offer {offerId}");
+
             return false;
         }
 
@@ -55,6 +56,21 @@ namespace ExpertAdministration.Web.Services
         {
             //TODO: Check returned result
             return await _httpClient.GetFromJsonAsync<Offer>($"api/Offers/id/{offerId}");
+        }
+
+        public async Task<bool> DeleteOfferAsync(string offerId)
+        {
+            var result = await _httpClient.DeleteAsync($"api/offers/{offerId}");
+
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                _logger.LogInformation($"Successfully deleted offer {offerId}");
+                return true;
+            }
+
+            _logger.LogError($"Failed to delete offer {offerId}");
+
+            return false;
         }
     }
 }
