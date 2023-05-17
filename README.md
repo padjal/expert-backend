@@ -3,9 +3,9 @@ Expert BG's backend is the monitoring system, which lays behind the offer system
 pool of offers in our application.
 
 ### Current status
-[![Main build](https://github.com/padjal/expert-backend/actions/workflows/dotnet.yml/badge.svg?branch=main)]
-
-[![Dev build](https://github.com/padjal/expert-backend/actions/workflows/dotnet.yml/badge.svg?branch=dev)]
+| Main                                                                                                       | Dev                                                                                                      |
+|------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| ![Main build](https://github.com/padjal/expert-backend/actions/workflows/dotnet.yml/badge.svg?branch=main) | ![Dev build](https://github.com/padjal/expert-backend/actions/workflows/dotnet.yml/badge.svg?branch=dev) |
 
 ## Architecture
 The backend consists of two main parts - an API, which makes the connection to the Firestore database and a Blazor 
