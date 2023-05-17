@@ -35,4 +35,12 @@ public interface IDatabaseService
     /// <param name="ct"></param>
     /// <returns></returns>
     public Task<bool> UpdateOfferFieldAsync(string offerId, string field, object value, CancellationToken ct);
+
+    /// <summary>
+    /// Deletes an offer with specified id from the database.
+    /// </summary>
+    /// <param name="offerId">The specified id of the offer being deleted.</param>
+    /// <param name="ct">The cancellation token, which keeps track of user cancellation intent.</param>
+    /// <returns>True if the deletion is successful.</returns>
+    public Task<bool> DeleteOfferAsync(string offerId, CancellationToken ct);
 }

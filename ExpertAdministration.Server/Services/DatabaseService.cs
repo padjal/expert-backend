@@ -165,4 +165,31 @@ public class DatabaseService : IDatabaseService
 
         return true;
     }
+
+    public async Task<bool> DeleteOfferAsync(string offerId, CancellationToken ct)
+    {
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"offers/{offerId}");
+        }
+        catch
+        {
+            throw new IdNotFoundException(offerId, "Could not find specified offer in database.");
+        }
+
+        try
+        {
+            await document.DeleteAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return false;
+        }
+
+        return true;
+    }
 }
