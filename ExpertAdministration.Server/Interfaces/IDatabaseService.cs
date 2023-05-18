@@ -27,6 +27,15 @@ public interface IDatabaseService
     public Task<Offer?> GetOfferAsync(string offerId, CancellationToken ct);
 
     /// <summary>
+    /// Get a user from the database by a specified id.
+    /// </summary>
+    /// <param name="userId">The specified id.</param>
+    /// <param name="ct">The cancellation token, which keeps track of user cancellation intent.</param>
+    /// <returns>A user instance if found in the database or NULL if an error occurs.</returns>
+    /// /// <exception cref="IdNotFoundException">Occurs when the specified id is not found.</exception>
+    public Task<User?> GetUserByIdAsync(string userId, CancellationToken ct);
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="offerId"></param>

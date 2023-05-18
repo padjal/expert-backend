@@ -134,6 +134,50 @@ public class DatabaseService : IDatabaseService
         }
     }
 
+    public async Task<User> GetUserByIdAsync(string userId, CancellationToken ct)
+    {
+        //TODO: Add userId field validation
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"users/{userId}");
+        }
+        catch
+        {
+            throw new IdNotFoundException(userId, "Could not find specified user in database.");
+        }
+
+        var docSnapshot = await document.GetSnapshotAsync(ct);
+
+        try
+        {
+            var name = docSnapshot.GetValue<string>("name");
+            var email = docSnapshot.GetValue<string>("email");
+            var phone = docSnapshot.GetValue<string>("phone");
+            var photoUrl = docSnapshot.GetValue<string>("photo");
+            var region = docSnapshot.GetValue<string>("region");
+
+            var user = new User()
+            {
+                Name = name,
+                Id = userId,
+                Email = email,
+                Phone = phone,
+                ProfilePictureUrl = photoUrl,
+                Region = region
+            };
+
+            return user;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+
+            return null;
+        }
+    }
+
     public async Task<bool> UpdateOfferFieldAsync(string offerId, string field, object value, CancellationToken ct)
     {
         DocumentReference document;

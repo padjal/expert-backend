@@ -11,6 +11,7 @@ public class OfferReviewViewModel : ViewModelBase
     private bool _isProgressIndicatorActive = true;
     private string _offerStatus;
     private bool _offerStatusHasChanged;
+    private User _user;
 
     public delegate void OfferStatusHandler(object sender, string title, string message);
 
@@ -25,6 +26,12 @@ public class OfferReviewViewModel : ViewModelBase
     {
         get => _offer;
         private set => SetField(ref _offer, value);
+    }
+
+    public User User
+    {
+        get => _user;
+        private set => SetField(ref _user, value);
     }
 
     public bool IsProgressIndicatorActive
@@ -50,6 +57,8 @@ public class OfferReviewViewModel : ViewModelBase
         IsProgressIndicatorActive = true;
 
         Offer = await _databaseService.GetOfferAsync(offerId);
+
+        User = await _databaseService.GetUserByIdAsync(Offer.Owner);
 
         OfferStatus = Offer.Status;
 

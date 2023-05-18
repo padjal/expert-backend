@@ -14,10 +14,13 @@ else
 {
     <RadzenRow>
         <RadzenColumn>
-            <h3>@ViewModel.Offer.Name</h3>
-            <p>Id: @ViewModel.Offer.Id</p>
+            <h3>Offer</h3>
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <h2 style="padding-right: 1em">@ViewModel.Offer.Name</h2>
+                <p>Id: @ViewModel.Offer.Id</p>
+            </RadzenStack>
+
             <p>Description: @ViewModel.Offer.Description</p>
-            <p>Owner: @ViewModel.Offer.Owner</p>
 
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                 <p style="padding-top: 10px">Status:</p>
@@ -31,6 +34,16 @@ else
             <RadzenButton Click=@OnOfferDeleteButtonClick Text="Delete offer" ButtonStyle="ButtonStyle.Danger"/>
 
             <RadzenButton Click=@OnBackButtonClick Text="Go back" ButtonStyle="ButtonStyle.Primary"/>
+        </RadzenColumn>
+        <RadzenColumn>
+            <h3>Owner</h3>
+            <p>@ViewModel.Offer.Owner</p>
+            <RadzenImage Path="@ViewModel.User.ProfilePictureUrl" Style="height: 5rem;"/>
+            <p>@ViewModel.User.Name</p>
+            <p>@ViewModel.User.Id</p>
+            <p>@ViewModel.User.Email</p>
+            <p>@ViewModel.User.Phone</p>
+            <p>@ViewModel.User.Region</p>
         </RadzenColumn>
         <RadzenColumn>
             @foreach (var imageUrl in ViewModel.Offer.ImageUrls)

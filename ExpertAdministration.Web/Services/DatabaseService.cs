@@ -58,6 +58,12 @@ namespace ExpertAdministration.Web.Services
             return await _httpClient.GetFromJsonAsync<Offer>($"api/Offers/id/{offerId}");
         }
 
+        public async Task<User> GetUserByIdAsync(string id)
+        {
+            //TODO: Check returned result
+            return await _httpClient.GetFromJsonAsync<User>($"api/users/{id}");
+        }
+
         public async Task<bool> DeleteOfferAsync(string offerId)
         {
             var result = await _httpClient.DeleteAsync($"api/offers/{offerId}");

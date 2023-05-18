@@ -32,6 +32,13 @@ namespace ExpertAdministration.Web.Interfaces
         Task<Offer> GetOfferAsync(string offerId);
 
         /// <summary>
+        /// Gets information for a specified user given an id asynchronously.
+        /// </summary>
+        /// <param name="id">The specified user id.</param>
+        /// <returns>A user object.</returns>
+        Task<User> GetUserByIdAsync(string id);
+
+        /// <summary>
         /// Delete an offer by id.
         /// </summary>
         /// <param name="offerId">The specified id.</param>
