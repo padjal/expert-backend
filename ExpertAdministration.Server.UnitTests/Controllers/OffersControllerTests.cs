@@ -21,7 +21,7 @@ public class OffersControllerTests
         var logger = new Mock<ILogger<OffersController>>();
 
         databaseService
-            .Setup(service => service.GetAllOffersAsync(new CancellationToken(), 1000))
+            .Setup(service => service.GetAllOffersAsync(new CancellationToken(), 1000, "any"))
             .ReturnsAsync((List<Offer>)null);
 
         var controller = new OffersController(logger.Object, databaseService.Object);
@@ -48,7 +48,7 @@ public class OffersControllerTests
         var returnOfferList = new List<Offer>() { new Offer(), new Offer() };
 
         databaseService
-            .Setup(service => service.GetAllOffersAsync(new CancellationToken(), 1000))
+            .Setup(service => service.GetAllOffersAsync(new CancellationToken(), 1000, "any"))
             .ReturnsAsync(returnOfferList);
 
         var controller = new OffersController(logger.Object, databaseService.Object);

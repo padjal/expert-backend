@@ -1,5 +1,6 @@
 using ExpertAdministration.Core.Models;
 using ExpertAdministration.Web.Interfaces;
+using Radzen;
 
 namespace ExpertAdministration.Web.ViewModels;
 
@@ -12,8 +13,9 @@ public class OfferReviewViewModel : ViewModelBase
     private string _offerStatus;
     private bool _offerStatusHasChanged;
     private User _user;
+    private string _previousPage;
 
-    public delegate void OfferStatusHandler(object sender, string title, string message);
+    public delegate void OfferStatusHandler(object sender, NotificationMessage message);
 
     public event OfferStatusHandler OnOfferStatusUpdated;
 
@@ -46,6 +48,12 @@ public class OfferReviewViewModel : ViewModelBase
         set => SetField(ref _offerStatus, value);
     }
 
+    public string PreviousPage
+    {
+        get => _previousPage;
+        set => SetField(ref _previousPage, value);
+    }
+
     public bool OfferStatusHasChanged
     {
         get => _offerStatusHasChanged;
@@ -75,13 +83,27 @@ public class OfferReviewViewModel : ViewModelBase
 
         if (isUpdateSuccessful)
         {
-            OnOfferStatusUpdated(this, "Update result", $"Successfully updated offer {Offer.Id} status to {OfferStatus}");
+            OnOfferStatusUpdated(this,
+                new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Successful update",
+                    Detail = $"Successfully updated offer {Offer.Id} status to {OfferStatus}"
+                }
+            );
 
             OfferStatusHasChanged = true;
         }
         else
         {
-            OnOfferStatusUpdated(this, "Update result", $"Could not updat offer {Offer.Id} status");
+            OnOfferStatusUpdated(this,
+                new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Unsuccessful update",
+                    Detail = $"Could not updat offer {Offer.Id} status"
+                }
+            );
         }
     }
 
@@ -95,13 +117,27 @@ public class OfferReviewViewModel : ViewModelBase
 
         if (isDeleteSuccessful)
         {
-            OnOfferStatusUpdated(this, "Delete result", $"Successfully deleted offer {Offer.Id}");
+            OnOfferStatusUpdated(this,
+                new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Delete result",
+                    Detail = $"Successfully deleted offer {Offer.Id}"
+                }
+            );
 
             OfferStatusHasChanged = true;
         }
         else
         {
-            OnOfferStatusUpdated(this, "Delete result", $"Could not delete offer {Offer.Id}");
+            OnOfferStatusUpdated(this,
+                new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Delete result",
+                    Detail = $"Could not delete offer {Offer.Id}"
+                }
+            );
         }
     }
 }

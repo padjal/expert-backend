@@ -15,7 +15,7 @@ public interface IDatabaseService
     /// <param name="maxOffersLimit">The maximum number of offers returned from the database.</param>
     /// <param name="ct">The cancellation token, which keeps track of user cancellation intent.</param>
     /// <returns>A collection of offers or NULL if an error occurs.</returns>
-    public Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit);
+    public Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit, string status = "any");
 
     /// <summary>
     /// Returns an offer instance based on a specified id asynchronously.

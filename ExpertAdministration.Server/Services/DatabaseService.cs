@@ -27,7 +27,7 @@ public class DatabaseService : IDatabaseService
         _logger = logger;
     }
 
-    public async Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit)
+    public async Task<List<Offer>?> GetAllOffersAsync(CancellationToken ct, int maxOffersLimit, string status = "any")
     {
         QuerySnapshot querySnapshot;
 
@@ -36,6 +36,11 @@ public class DatabaseService : IDatabaseService
             var collection = FirestoreDb.Collection("offers")
                 .OrderBy("created")
                 .Limit(maxOffersLimit);
+
+            if (status != "any")
+            {
+                collection = collection.WhereEqualTo("status", status);
+            }
 
             querySnapshot = await collection.GetSnapshotAsync(ct);
         }
@@ -58,7 +63,7 @@ public class DatabaseService : IDatabaseService
                 var description = document.GetValue<string>("description");
                 var owner = document.GetValue<string>("owner");
                 var categories = document.GetValue<List<string>>("categories");
-                var status = document.GetValue<string>("status");
+                var offerStatus = document.GetValue<string>("status");
                 var images = document.GetValue<List<string>>("images");
 
 
@@ -70,7 +75,7 @@ public class DatabaseService : IDatabaseService
                     Description = description,
                     Owner = owner,
                     Categories = categories,
-                    Status = status,
+                    Status = offerStatus,
                     ImageUrls = images
                 };
 
@@ -80,6 +85,9 @@ public class DatabaseService : IDatabaseService
             {
                 _logger.LogError($"Offer from document{document.Id} does not comply with schema." +
                                  $"{e.Message}");
+
+                //TODO: Change offer status to Archived and add offerId if not present
+                await UpdateFailingOfferDetails(document.Id);
             }
         }
 
@@ -235,5 +243,38 @@ public class DatabaseService : IDatabaseService
         }
 
         return true;
+    }
+
+    private async Task UpdateFailingOfferDetails(string offerId)
+    {
+        DocumentReference document;
+
+        try
+        {
+            document = FirestoreDb.Document($"offers/{offerId}");
+        }
+        catch
+        {
+            _logger.LogError($"Cannot find offer document with id:{offerId}");
+            return;
+        }
+
+        try
+        {
+            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            {
+                { new FieldPath("status"), "Review" },
+                { new FieldPath("id"), offerId }
+            };
+
+            await document.UpdateAsync(updates);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return;
+        }
+
+        _logger.LogInformation($"Successfully updated id and status of offer {offerId}");
     }
 }
