@@ -1,0 +1,71 @@
+﻿@page "/newoffers"
+@using ExpertAdministration.Core.Models
+@using ExpertAdministration.Web.ViewModels
+@using Radzen
+@using Radzen.Blazor
+@*@page "/newoffers/{ShouldRefresh:bool}"*@
+@inject NavigationManager Navigation
+@inject NewOffersViewModel ViewModel
+
+<h1>For Review</h1>
+<p>These are all the offers that are pending review.</p>
+
+@if (ViewModel.AreOffersLoading)
+{
+    <p>Loading offers...</p>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
+}
+
+<RadzenDataGrid Data="@ViewModel.Offers" TItem="Offer"
+                AllowAlternatingRows="true"
+                AllowFiltering="true"
+                AllowRowSelectOnRowClick="true"
+                AllowSorting="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="Offer" Property="CreatedAt" Title="CreatedAt"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Id" Title="Id"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Name" Title="Name"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Owner" Title="Owner"/>
+        <RadzenDataGridColumn TItem="Offer" Property="Status" Title="Status" Filterable="false" Sortable="false"/>
+        <RadzenDataGridColumn TItem="Offer" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
+            <Template Context="offer">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditOffer(offer))" @onclick:stopPropagation="true">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@code {
+
+    [Parameter]
+    public bool ShouldRefresh { get; set; }
+
+    public void EditOffer(Offer offer)
+    {
+    //Open new window with all offer information
+        Navigation.NavigateTo($"/offerreview/{offer.Id}");
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        ViewModel.PropertyChanged += (sender, args) => StateHasChanged();
+
+        ViewModel.GetOffersAsync();
+
+        return base.OnInitializedAsync();
+    }
+
+    // Moved to OnInitializedAsync
+    /*protected override void OnParametersSet()
+    {
+        if (ShouldRefresh)
+        {
+            ViewModel.GetOffersAsync();
+        }
+
+        base.OnParametersSet();
+    }*/
+
+}

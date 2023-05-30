@@ -1,10 +1,13 @@
 ﻿@page "/offerreview/{offerId}"
-@using ExpertAdministration.Web.ViewModels
 @using Radzen
 @using Radzen.Blazor
+@using ExpertAdministration.Web.ViewModels
+@using ExpertAdministration.Web.Common
 @inject NavigationManager Navigation
 @inject OfferReviewViewModel ViewModel
 @inject DialogService DialogService
+@inject NavigationHistory NavigationHistory
+@inject NotificationService NotificationService
 
 @if (ViewModel.IsProgressIndicatorActive)
 {
@@ -73,14 +76,7 @@ else
 
     private void OnBackButtonClick()
     {
-        if (ViewModel.OfferStatusHasChanged)
-        {
-            Navigation.NavigateTo("/offermonitor/true");
-        }
-        else
-        {
-            Navigation.NavigateTo("/offermonitor");
-        }
+        Navigation.NavigateTo($"/{NavigationHistory.PreviousPage}");
     }
 
     private async Task OnOfferDeleteButtonClick()
@@ -93,17 +89,9 @@ else
         ViewModel.ChangeStatus();
     }
 
-    private void ShowUpdateResult(object sender, string title, string message)
+    private void ShowUpdateResult(object sender, NotificationMessage message)
     {
-        ShowMessageDialog(message);
-    }
-
-    async Task ShowMessageDialog(string title, string message = "test")
-    {
-        await DialogService.OpenAsync(title, ds =>
-            @<div>
-                @message
-            </div>, new DialogOptions { CloseDialogOnOverlayClick = true });
+        NotificationService.Notify(message);
     }
 
 }   

@@ -1,14 +1,15 @@
 ﻿@page "/offermonitor"
-@page "/offermonitor/{ShouldRefresh:bool}"
 @using ExpertAdministration.Core.Models
 @using ExpertAdministration.Web.ViewModels
 @using Radzen
 @using Radzen.Blazor
+@*@page "/offermonitor/{ShouldRefresh:bool}"*@
 @inject NavigationManager Navigation
 @inject OffersMonitorViewModel ViewModel
 @inject NavigationManager NavigationManager
 
-<h1>OfferMonitor</h1>
+<h1>Offer Monitor</h1>
+<p>These are all available offers</p>
 
 @if (ViewModel.AreOffersLoading)
 {
@@ -52,10 +53,13 @@
     {
         ViewModel.PropertyChanged += (sender, args) => StateHasChanged();
 
+        ViewModel.GetOffersAsync();
+
         return base.OnInitializedAsync();
     }
 
-    protected override void OnParametersSet()
+    //Refresh every times. Moved to OnInitializedAsync
+    /*protected override void OnParametersSet()
     {
         if (ShouldRefresh)
         {
@@ -63,6 +67,6 @@
         }
 
         base.OnParametersSet();
-    }
+    }*/
 
 }

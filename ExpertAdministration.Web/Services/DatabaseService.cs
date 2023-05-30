@@ -22,7 +22,7 @@ namespace ExpertAdministration.Web.Services
             //TODO: Check for any errors while fetching all offers.
             List<Offer> offers = new List<Offer>();
 
-            var response = await _httpClient.GetFromJsonAsync<List<Offer>>("api/Offers");
+            var response = await _httpClient.GetFromJsonAsync<List<Offer>>("api/offers");
 
             if (response != null)
             {
@@ -32,9 +32,19 @@ namespace ExpertAdministration.Web.Services
             return offers;
         }
 
-        public Task<List<Offer>> GetAllOffersForReviewAsync()
+        public async Task<List<Offer>> GetAllOffersForReviewAsync()
         {
-            throw new NotImplementedException();
+            //TODO: Check for any errors while fetching all offers.
+            List<Offer> offers = new List<Offer>();
+
+            var response = await _httpClient.GetFromJsonAsync<List<Offer>>("api/offers?status=Review");
+
+            if (response != null)
+            {
+                offers.AddRange(response);
+            }
+
+            return offers;
         }
 
         public async Task<bool> UpdateOfferStatusAsync(string offerId, string offerStatus)

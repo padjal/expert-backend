@@ -31,12 +31,17 @@ namespace ExpertAdministration.Server.Controllers
         /// <remarks>Offers are ordered by createdAt attribute by default.</remarks>
         /// <param name="ct">The cancellation token used to indicate user cancellation intents.</param>
         /// <param name="maxOffersLimit">The maximum number of offers returned from the database. 1000 by default</param>
+        /// <param name="status">Filters the offers based on their status.</param>
         /// <returns>An action result from the operation.</returns>
         /// <response code="500">Returned if there is a database issue while fetching the offers.</response>
-        [HttpGet("{maxOffersLimit:int?}")]
-        public async Task<ActionResult<List<Offer>>> Get(CancellationToken ct, int maxOffersLimit = 1000)
+        [HttpGet]
+        public async Task<ActionResult<List<Offer>>> Get(CancellationToken ct,
+            [FromQuery] int maxOffersLimit = 1000,
+            [FromQuery] string? status = "any")
         {
-            var offers = await _databaseService.GetAllOffersAsync(ct, maxOffersLimit);
+            //TODO: Check status parameter if complies with data model.
+
+            var offers = await _databaseService.GetAllOffersAsync(ct, maxOffersLimit, status);
 
             if (offers == null)
             {
