@@ -59,7 +59,7 @@ else
     [Parameter]
     public string offerId { get; set; }
 
-    public IEnumerable<string> StatusOptions = new List<string> { "New", "Review", "Active", "Archived" };
+    public IEnumerable<string> StatusOptions = new List<string> { "New", "Review", "Active", "Archived", "Rejected" };
 
     protected override Task OnInitializedAsync()
     {
